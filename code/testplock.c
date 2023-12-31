@@ -6,7 +6,6 @@
 
 int main()
 {
-    int count = 0;
     plock_init(TARGET_LOCK_NUMBER);
 
     for (int i = 0; i < RIVAL_PROCS_COUNT; i++)
@@ -14,10 +13,8 @@ int main()
         if (fork() == 0)
         {
             plock_acquire(TARGET_LOCK_NUMBER);
-            sleep(1000);
-            count++;
-            printf(1, "pid:   %d   |", getpid());
-            printf(1, "count:   %d\n", count);
+            sleep(100);
+            printf(1, "pid:   %d   \n", getpid());
             plock_release(TARGET_LOCK_NUMBER);
             exit();
         }
