@@ -23,6 +23,9 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+void plock_init(int);
+void plock_acquire(int);
+void plock_release(int);
 
 // ulib.c
 int stat(const char*, struct stat*);

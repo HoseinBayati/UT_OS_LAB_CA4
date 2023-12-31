@@ -7,6 +7,7 @@ struct proc;
 struct rtcdate;
 struct spinlock;
 struct sleeplock;
+struct prioritylock;
 struct stat;
 struct superblock;
 
@@ -138,6 +139,17 @@ void            acquiresleep(struct sleeplock*);
 void            releasesleep(struct sleeplock*);
 int             holdingsleep(struct sleeplock*);
 void            initsleeplock(struct sleeplock*, char*);
+
+// prioritylock.c
+void            acquire_priority_lock(struct prioritylock*);
+void            release_priority_lock(struct prioritylock*);
+int             holding_priority_lock(struct prioritylock*);
+void            init_priority_lock(struct prioritylock*, char*);
+
+void            plock_init(int);
+void            plock_acquire(int);
+void            plock_release(int);
+
 
 // string.c
 int             memcmp(const void*, const void*, uint);

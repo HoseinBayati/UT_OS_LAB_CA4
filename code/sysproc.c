@@ -89,3 +89,36 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int sys_plock_init(void)
+{
+  int plock_id;
+  if(argint(0, &plock_id) < 0)
+    return -1;
+  
+  if(plock_id < 0 || plock_id >= PLOCKS_COUNT)
+  plock_init(plock_id);
+  return 0;
+}
+
+int sys_plock_acquire(void)
+{
+  int plock_id;
+  if(argint(0, &plock_id) < 0)
+    return -1;
+  
+  if(plock_id < 0 || plock_id >= PLOCKS_COUNT)
+  plock_acquire(plock_id);
+  return 0;
+}
+
+int sys_plock_release(void)
+{
+  int plock_id;
+  if(argint(0, &plock_id) < 0)
+    return -1;
+  
+  if(plock_id < 0 || plock_id >= PLOCKS_COUNT)
+  plock_release(plock_id);
+  return 0;
+}
