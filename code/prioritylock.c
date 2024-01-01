@@ -10,7 +10,7 @@
 #include "spinlock.h"
 #include "prioritylock.h"
 
-#define MAX_QUEUE_LENGTH 20
+#define MAX_QUEUE_LENGTH 30
 
 int priority_queue[MAX_QUEUE_LENGTH];
 int pq_size = 0;
@@ -27,43 +27,59 @@ void init_priority_lock(struct prioritylock *lk, char *name)
 }
 
 int remove_from_priority_queue()
-{ 
-  int target_pid = myproc()->pid;
-  
-  for (int i = 0; i < pq_size; i++)
-  {
-    if (priority_queue[i] == target_pid)
-    {
-      for (int j = i; j < pq_size; j++)
-      {
-        priority_queue[j] = priority_queue[j+1];
-      }
-      return 1;
-    }
-  }
-
-  return 0;
-}
-
-int add_to_priority_queue(){
+{
   int pid = myproc()->pid;
-  if (pq_size == MAX_QUEUE_LENGTH)
+
+  if (pq_size >= MAX_QUEUE_LENGTH)
   {
     return 0;
   }
 
   int i = 0;
-  while(pid > priority_queue[i] && i < pq_size)
+  while (pid != priority_queue[i] && i < pq_size)
+  {
+    i++;
+  }
+
+  if (i == pq_size)
+  {
+    cprintf("no such process in priority queue: pid %d\n", myproc()->pid);
+    return 0;
+  }
+
+  for (int j = i; j < pq_size; j++)
+  {
+    priority_queue[j] = priority_queue[j + 1];
+  }
+
+  priority_queue[pq_size] = 0;
+  pq_size--;
+
+  return 1;
+}
+
+int add_to_priority_queue()
+{
+  int pid = myproc()->pid;
+
+  if (pq_size >= MAX_QUEUE_LENGTH)
+  {
+    return 0;
+  }
+
+  int i = 0;
+  while (pid > priority_queue[i] && i < pq_size)
   {
     i++;
   }
 
   for (int j = pq_size; j > i; j--)
   {
-    priority_queue[j] = priority_queue[j-1];
+    priority_queue[j] = priority_queue[j - 1];
   }
 
   priority_queue[i] = pid;
+  pq_size++;
 
   return 1;
 }
@@ -80,6 +96,10 @@ void acquire_priority_lock(struct prioritylock *lk)
     sleep(lk, &lk->lk);
   }
 
+  cprintf("\nproc: %d - acquired lock\n", myproc()->pid);
+  // cprintf(" || priority_queue_size%d || ", pq_size);
+  // cprintf("current min %d\n", priority_queue[0]);
+
   lk->locked = 1;
   lk->pid = myproc()->pid;
   release(&lk->lk);
@@ -88,12 +108,16 @@ void acquire_priority_lock(struct prioritylock *lk)
 void release_priority_lock(struct prioritylock *lk)
 {
   acquire(&lk->lk);
-  pq_size--;
+  // pq_size--;
   remove_from_priority_queue();
+
   lk->locked = 0;
   lk->pid = 0;
   wakeup(lk);
   release(&lk->lk);
+  cprintf("proc: %d - released lock\n", myproc()->pid);
+  // cprintf(" || priority_queue_size%d || ", pq_size);
+  // cprintf("current min %d\n", priority_queue[0]);
 }
 
 int holding_priority_lock(struct prioritylock *lk)
@@ -108,14 +132,18 @@ int holding_priority_lock(struct prioritylock *lk)
 
 void plock_init(int plock_id)
 {
+  // cprintf("hi 0 \n");
   init_priority_lock(&(plocks[plock_id]), "priority_lock");
 }
 
 void plock_acquire(int plock_id)
 {
+  // cprintf("hi 1 \n");
   acquire_priority_lock(&(plocks[plock_id]));
 }
 
-void plock_release(int plock_id){
+void plock_release(int plock_id)
+{
+  // cprintf("hi 2 \n");
   release_priority_lock(&(plocks[plock_id]));
 }

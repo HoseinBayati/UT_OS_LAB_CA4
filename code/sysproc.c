@@ -92,33 +92,42 @@ sys_uptime(void)
 
 int sys_plock_init(void)
 {
+  // cprintf("hi 00 \n");
   int plock_id;
   if(argint(0, &plock_id) < 0)
     return -1;
   
   if(plock_id < 0 || plock_id >= PLOCKS_COUNT)
+    return -1;
+
   plock_init(plock_id);
   return 0;
 }
 
 int sys_plock_acquire(void)
 {
+  // cprintf("hi 11 \n");
   int plock_id;
   if(argint(0, &plock_id) < 0)
     return -1;
   
   if(plock_id < 0 || plock_id >= PLOCKS_COUNT)
+    return -1;
+
   plock_acquire(plock_id);
   return 0;
 }
 
 int sys_plock_release(void)
 {
+  // cprintf("hi 22 \n");
   int plock_id;
   if(argint(0, &plock_id) < 0)
     return -1;
   
   if(plock_id < 0 || plock_id >= PLOCKS_COUNT)
+    return -1;
+
   plock_release(plock_id);
   return 0;
 }

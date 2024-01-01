@@ -14,7 +14,8 @@ int main()
         {
             plock_acquire(TARGET_LOCK_NUMBER);
             sleep(100);
-            printf(1, "pid:   %d   \n", getpid());
+            printf(1, "critical section pid:   %d   \n", getpid());
+            sleep(100);
             plock_release(TARGET_LOCK_NUMBER);
             exit();
         }
