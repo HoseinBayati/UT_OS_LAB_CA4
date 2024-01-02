@@ -172,6 +172,9 @@ void            syscall(void);
 void            timerinit(void);
 
 // trap.c
+extern int global_syscalls_count;
+extern struct spinlock global_syscalls_count_lock;
+
 void            idtinit(void);
 extern uint     ticks;
 void            tvinit(void);

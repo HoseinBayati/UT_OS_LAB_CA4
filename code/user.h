@@ -26,6 +26,7 @@ int uptime(void);
 void plock_init(int);
 void plock_acquire(int);
 void plock_release(int);
+int getsyscnt(void);
 
 // ulib.c
 int stat(const char*, struct stat*);

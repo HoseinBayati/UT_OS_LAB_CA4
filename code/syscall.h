@@ -23,3 +23,4 @@
 #define SYS_plock_init 22
 #define SYS_plock_acquire 23
 #define SYS_plock_release 24
+#define SYS_getsyscnt 25

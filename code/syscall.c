@@ -103,6 +103,7 @@ extern int sys_uptime(void);
 extern int sys_plock_init(void);
 extern int sys_plock_acquire(void);
 extern int sys_plock_release(void);
+extern int sys_getsyscnt(void);
 
 static int (*syscalls[])(void) = {
     [SYS_fork] sys_fork,
@@ -129,46 +130,23 @@ static int (*syscalls[])(void) = {
     [SYS_plock_init] sys_plock_init,
     [SYS_plock_acquire] sys_plock_acquire,
     [SYS_plock_release] sys_plock_release,
+    [SYS_getsyscnt] sys_getsyscnt,
 };
-
-struct
-{
-  struct spinlock lock;
-  int count;
-} global_syscalls_count;
 
 void syscall(void)
 {
 
-  for (int i = 0; i < ncpu; i++)
-  {
-    if (cpus[i].started)
-    {
-      // cprintf("0---------0\n");
+  // for (int i = 0; i < ncpu; i++)
+  // {
+  //   mycpu()->syscalls_count++;
+  // }
 
-      if (cpus[i].syscalls_count)
-      {
-        // cprintf("1---------1\n");
-        cpus[i].syscalls_count = 1;
-      }
-      else
-      {
-        // cprintf("2---------2\n");
-        cpus[i].syscalls_count++;
-      }
-    }
-  }
+  // if (global_syscalls_count.count)
+  //   global_syscalls_count.count++;
+  // else
+  //   global_syscalls_count.count = 1;
 
-  acquire(&global_syscalls_count.lock);
-
-  if (global_syscalls_count.count)
-    global_syscalls_count.count++;
-  else
-    global_syscalls_count.count = 1;
-
-  
-  release(&global_syscalls_count.lock);
-
+  // release(&global_syscalls_count.lock);
 
   // cprintf("unknown sys call %d\n", global_syscalls_count);
 
@@ -186,4 +164,20 @@ void syscall(void)
             curproc->pid, curproc->name, num);
     curproc->tf->eax = -1;
   }
+}
+
+int sys_getsyscnt(void)
+{
+  cprintf("ncpu: %d\n", ncpu);
+
+  for (int i = 0; i < ncpu; i++)
+  {
+    if (cpus[i].started)
+    {
+      cprintf("cpu: %d, syscall count: %d\n", i, cpus[i].syscalls_count);
+    }
+  }
+
+  cprintf("\n-- global syscall count: %d \n", global_syscalls_count);
+  return 0;
 }
