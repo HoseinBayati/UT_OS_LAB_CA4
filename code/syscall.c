@@ -135,21 +135,6 @@ static int (*syscalls[])(void) = {
 
 void syscall(void)
 {
-
-  // for (int i = 0; i < ncpu; i++)
-  // {
-  //   mycpu()->syscalls_count++;
-  // }
-
-  // if (global_syscalls_count.count)
-  //   global_syscalls_count.count++;
-  // else
-  //   global_syscalls_count.count = 1;
-
-  // release(&global_syscalls_count.lock);
-
-  // cprintf("unknown sys call %d\n", global_syscalls_count);
-
   int num;
   struct proc *curproc = myproc();
 
@@ -168,16 +153,23 @@ void syscall(void)
 
 int sys_getsyscnt(void)
 {
-  cprintf("ncpu: %d\n", ncpu);
+  cprintf("Number of Total CPUs: %d\n", ncpu);
 
+  //Loop over all running CPUs to calculate systemcalls
   for (int i = 0; i < ncpu; i++)
   {
     if (cpus[i].started)
     {
-      cprintf("cpu: %d, syscall count: %d\n", i, cpus[i].syscalls_count);
+      cprintf("CPU No: %d, system call count: %d\n", i, cpus[i].syscalls_count);
+    }
+    else {
+      cprintf("CPU has not started yet.\n");
     }
   }
 
-  cprintf("\n-- global syscall count: %d \n", global_syscalls_count);
+  cprintf("--------------------------------------");
+  cprintf("\n*Global systemcall counter is: %d\n", global_syscalls_count);
+  cprintf("--------------------------------------\n");
+
   return 0;
 }

@@ -3,32 +3,36 @@
 #include "user.h"
 #include "fcntl.h"
 
-int main(int argc, char *argv[])
-{
 
-    for (int i = 0; i < 10; i++)
-    {
+#define NUM_PROCESSES 10
 
+void writeToFiles(int p_order) {
+    char filename[15] = "output_text";
+    
+    filename[11] = '0' + p_order;
+    filename[12] = '\0'; 
+
+    int fd = open(filename, O_WRONLY | O_CREATE);
+    if (fd >= 0) {
+        write(fd, "content", 7);
+        close(fd);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    for (int i = 0; i < NUM_PROCESSES; i++) {
         int pid = fork();
-        if (pid == 0)
-        {
-            sleep(1000);
-            char inp[10] = "outfile";
-            inp[7] = '0' + i;
-            inp[8] = '\0';
-            int fd = open(inp, O_WRONLY);
-            sleep(1000);
-            write(fd, "hellow", 7);
-            sleep(1000);
-            close(fd);
+        if (pid == 0) {
+            // Child process
+            writeToFiles(i);
             exit();
         }
     }
 
-    for (int i = 0; i < 10; i++)
-    {
+    for (int i = 0; i < NUM_PROCESSES; i++) {
         wait();
     }
+
     getsyscnt();
 
     exit();
